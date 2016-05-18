@@ -106,8 +106,7 @@ def password_reset_request():
         if user:
             token = user.generate_reset_token()
             send_email(user.email,'重设密码',
-                       'auth/email/reset_password',user=user,token=token,
-                       next=request.args.get('next'))
+                       'auth/email/reset_password',user=user,token=token)
         flash('重设密码的邮件已经发到您的邮箱')
         return redirect(url_for('auth.login'))
     return render_template('auth/reset_password.html',form=form)
