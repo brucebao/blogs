@@ -39,3 +39,22 @@ class ChangePasswordForm(Form):
         Required(),EqualTo('new_password2',message='新密码两次输入不相符，请确认。')])
     new_password2 = PasswordField('确认新密码',validators=[Required()])
     submit = SubmitField('提交')
+
+
+class PasswordResetRequestForm(Form):
+    email = StringField('邮箱',validators=[Required(),Length(1,64),
+                                         Email()])
+    submit = SubmitField('提交')
+
+
+class PasswordResetForm(Form):
+    email = StringField('邮箱',validators=[Required(),Length(1,64),
+                                         Email()])
+    password = PasswordField('新密码', validators=[
+        Required(), EqualTo('password2', message='Passwords must match')])
+    password2 = PasswordField('确认新密码', validators=[Required()])
+    submit = SubmitField('提交')
+
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first() is None:
+            raise ValidationError('Unknown email address.')
