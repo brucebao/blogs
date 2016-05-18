@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Wagyu - Confirm your account{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>
+        您好，{{ current_user.username }}!
+    </h1>
+    <h4>
+        您还没有激活您的账户。
+    </h4>
+    <p>如果您没有收到激活邮件，请点击下列链接：
+        <a href=" {{url_for('auth.resend_confirmation')}}">再次发送激活邮件</a>
+    </p>
+</div>
+{% endblock %}

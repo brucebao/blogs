@@ -1,12 +1,26 @@
 # -*- coding:utf-8 -*-
 from flask import render_template, redirect, request, url_for, flash,session
-from flask.ext.login import login_user, logout_user, login_required
+from flask.ext.login import login_user, logout_user, login_required,current_user
 from . import auth
 from ..models import User
 from .forms import LoginForm, RegisterForm
 from .. import db
+from ..email import send_email
+
+@auth.before_app_request
+def before_request():
+    if current_user.is_authenticated \
+            and not current_user.confirmed \
+            and request.endpoint[:5] != 'auth.' \
+            and request.endpoint != 'static':
+        return redirect(url_for('auth.unconfirmed'))
 
 
+@auth.route('/unconfirmed')
+def unconfirmed():
+    if current_user.is_anonymous or current_user.confirmed:
+        return redirect(url_for('main.index'))
+    return render_template('auth/unconfirmed.html')
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -37,6 +51,32 @@ def register():
                     password=form.password.data,
                     )
         db.session.add(user)
-        flash('注册成功')
+        db.session.commit()
+        token = user.generate_confirmation_token()
+        send_email(user.email,'激活账户',
+                   'auth/email/confirm',user=current_user,token=token)
+        flash('激活邮件已发往您的邮箱，请登录邮箱确认。')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html',form=form)
+
+
+@auth.route('/confirm/<token>')
+@login_required
+def confirm(token):
+    if current_user.confirmed:
+        return redirect(url_for('main.index'))
+    if current_user.confirm(token):
+        flash('您已经激活了账户！')
+    else:
+        flash('未成功激活')
+    return redirect(url_for('main.index'))
+
+
+@auth.route('/confirm')
+@login_required
+def resend_confirmation():
+    token = current_user.generate_confirmation_token()
+    send_email(current_user.email,'激活账户',
+                   'auth/email/confirm',user=current_user,token=token)
+    flash('激活邮件已发往您的邮箱，请登录邮箱确认。')
+    return redirect(url_for('main.index'))
