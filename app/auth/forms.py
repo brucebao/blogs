@@ -31,3 +31,11 @@ class RegisterForm(Form):
     def validate_email(self,field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('邮箱已被注册')
+
+
+class ChangePasswordForm(Form):
+    old_password = PasswordField('原密码',validators=[Required()])
+    new_password = PasswordField('新密码',validators=[
+        Required(),EqualTo('new_password2',message='新密码两次输入不相符，请确认。')])
+    new_password2 = PasswordField('确认新密码',validators=[Required()])
+    submit = SubmitField('提交')
