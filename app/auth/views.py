@@ -1,9 +1,10 @@
 # -*- coding:utf-8 -*-
-from flask import render_template, redirect, request, url_for, flash
+from flask import render_template, redirect, request, url_for, flash,session
 from flask.ext.login import login_user, logout_user, login_required
 from . import auth
 from ..models import User
-from .forms import LoginForm
+from .forms import LoginForm, RegisterForm
+from .. import db
 
 
 
@@ -25,3 +26,17 @@ def logout():
     logout_user()
     flash('您已经退出登录.')
     return redirect(url_for('main.index'))
+
+
+@auth.route('/register',methods=['GET','POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        user = User(email=form.email.data,
+                    username=form.username.data,
+                    password=form.password.data,
+                    )
+        db.session.add(user)
+        flash('注册成功')
+        return redirect(url_for('auth.login'))
+    return render_template('auth/register.html',form=form)
