@@ -19,6 +19,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('auth.change_password') }}">修改密码</a></li>
                         <li><a href="{{ url_for('auth.change_email_request') }}">修改邮箱</a></li>
+                        <li><a href="{{ url_for('auth.profile',username=current_user.username) }}">用户资料</a></li>
                         <li><a href="{{ url_for('auth.logout') }}">退出登录</a></li>
                     </ul>
                 </li>

@@ -10,11 +10,12 @@ from ..email import send_email
 
 @auth.before_app_request
 def before_request():
-    if current_user.is_authenticated \
-            and not current_user.confirmed \
+    if current_user.is_authenticated:
+        current_user.ping()
+        if not current_user.confirmed \
             and request.endpoint[:5] != 'auth.' \
             and request.endpoint != 'static':
-        return redirect(url_for('auth.unconfirmed'))
+            return redirect(url_for('auth.unconfirmed'))
 
 
 @auth.route('/unconfirmed')
@@ -155,3 +156,7 @@ def change_email(token):
     return redirect(url_for('main.index'))
 
 
+@auth.route('/profile/<username>')
+def profile(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    return render_template('auth/user.html',user=user)
