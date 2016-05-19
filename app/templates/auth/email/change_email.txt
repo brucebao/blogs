@@ -1,0 +1,9 @@
+{{ current_user.username}},
+
+欢迎使用苏鲁空间！
+
+请点击链接激活您的新邮箱：
+
+{{url_for('auth.change_email',token=token,_external=True)}}
+
+苏鲁空间团队

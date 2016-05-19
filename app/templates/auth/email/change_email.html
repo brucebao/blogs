@@ -1,0 +1,9 @@
+<p>{{ current_user.username }},</p>
+
+<P>欢迎使用苏鲁空间！</P>
+
+<p>请点击链接激活您的新邮箱：</p>
+
+<a href="{{url_for('auth.change_email',token=token,_external=True)}}">确认修改</a>
+</hr>
+<p>苏鲁空间团队</p>
