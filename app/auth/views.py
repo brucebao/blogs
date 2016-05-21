@@ -156,7 +156,3 @@ def change_email(token):
     return redirect(url_for('main.index'))
 
 
-@auth.route('/profile/<username>')
-def profile(username):
-    user = User.query.filter_by(username=username).first_or_404()
-    return render_template('auth/user.html',user=user)
