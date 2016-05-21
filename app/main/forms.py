@@ -40,3 +40,8 @@ class EditProfileAdminForm(Form):
         if field.data != self.user.username and \
                 User.query.filter_by(username=field.data).first():
             raise ValidationError('此用户名已注册.')
+
+
+class PostForm(Form):
+    body = TextAreaField('别让灵感成空，快快写下来：',validators=[Required()])
+    submit = SubmitField('提交')

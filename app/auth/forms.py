@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 from flask.ext.wtf import Form
-from wtforms import StringField, PasswordField, BooleanField, SubmitField,ValidationError
+from wtforms import StringField, PasswordField, BooleanField, SubmitField,ValidationError,\
+    TextAreaField
 from wtforms.validators import Required, Length, Email,Regexp,EqualTo
 from ..models import User
 
@@ -69,3 +70,7 @@ class ChangeEmailForm(Form):
     def validate_email(self,field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('邮箱已被注册')
+
+
+
+

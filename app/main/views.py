@@ -1,15 +1,23 @@
 # -*- coding:utf-8 -*-
 from . import main
 from flask import render_template,flash,redirect,url_for
-from ..models import User
-from .forms import EditProfileForm,EditProfileAdminForm
+from ..models import User,Role,Post,Permission
+from .forms import EditProfileForm,EditProfileAdminForm,PostForm
 from flask.ext.login import login_required,current_user
 from .. import db
 from ..decorators import admin_required
 
-@main.route('/')
+@main.route('/',methods=['GET','POST'])
 def index():
-    return render_template('index.html')
+    form = PostForm()
+    if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
+        post = Post(body=form.body.data,
+                    author=current_user._get_current_object())
+        db.session.add(post)
+        return redirect(url_for('.index'))
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    return render_template('index.html',posts=posts,form=form)
+
 
 @main.route('/profile/<username>')
 def profile(username):
