@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "_macros.html" as macros %}
 
 {% block title %}Flasky - {{ user.username }}{% endblock %}
 
@@ -19,6 +20,7 @@
     {% if user.about_me %}<p>详细信息：{{ user.about_me }}</p>{% endif %}
     <p>注册时间：{{ moment(user.member_since).format('L') }}.</p>
     <p>上次访问： {{ moment(user.last_seen).fromNow() }}.</p>
+    <p>更新次数：{{ user.posts.count() }}</p>
     <p>
         {% if user == current_user %}
         <a class="btn btn-default" href="{{ url_for('main.edit_profile') }}">修改资料</a>
@@ -28,4 +30,11 @@
         {% endif %}
     </p>
 </div>
+<h4>更新列表</h4>
+{% include '_posts.html' %}
+{% if pagination %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination,'.profile',username=user.username)}}
+</div>
+{% endif %}
 {% endblock %}
