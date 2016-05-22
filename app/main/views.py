@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from . import main
-from flask import render_template,flash,redirect,url_for,request,current_app
+from flask import render_template,flash,redirect,url_for,request,current_app,abort
 from ..models import User,Role,Post,Permission
 from .forms import EditProfileForm,EditProfileAdminForm,PostForm
 from flask.ext.login import login_required,current_user
@@ -77,6 +77,30 @@ def edit_profile_admin(id):
     form.location.data = user.location
     form.about_me.data = user.about_me
     return render_template('edit_profile.html', form=form, user=user)
+
+
+@main.route('/post/<int:id>')
+def post(id):
+    post = Post.query.get_or_404(id)
+    return render_template('post.html',posts=[post])
+
+
+@main.route('/edit/<int:id>',methods=['GET','POST'])
+@login_required
+def edit(id):
+    post = Post.query.get_or_404(id)
+    if current_user != post.author and \
+        not current_user.can(Permission.ADMINISTER):
+        abort(403)
+    form = PostForm()
+    if form.validate_on_submit():
+        post.body = form.body.data
+        db.session.add(post)
+        flash('修改成功')
+        return redirect('.post',id=post.id)
+    form.body.data = post.body
+    return render_template('edit_post.html',form=form)
+
 
 
 
