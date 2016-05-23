@@ -63,13 +63,23 @@ class Post(db.Model):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
                          'h1', 'h2', 'h3', 'p']
-        target.html_body = bleach.linkfy(bleach.clean(
+        target.html_body = bleach.linkify(bleach.clean(
             markdown(value,output_format='html'),
             tags=allowed_tags,strip=True
         ))
 
 db.event.listen(Post.body,'set',Post.on_changed_body)
 
+
+class Follow(db.Model):
+    __tablename__ = "follows"
+    follower_id = db.Column(db.Integer,
+                          db.ForeignKey('users.id'),
+                          primary_key=True)
+    followed_id = db.Column(db.Integer,
+                            db.ForeignKey('users.id'),
+                            primary_key=True)
+    timestamp = db.Column(db.DateTime,default=datetime.utcnow)
 
 
 class User(UserMixin, db.Model):
@@ -86,6 +96,14 @@ class User(UserMixin, db.Model):
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     posts = db.relationship('Post',backref='author',lazy='dynamic')
+    followed = db.relationship('Follow',
+                               foreign_keys=[Follow.follower_id],
+                               backref=db.backref('follower',lazy='joined'),
+                               lazy='dynamic',cascade='all,delete-orphan')
+    followers = db.relationship('Follow',
+                                foreign_keys=[Follow.followed_id],
+                                backref=db.backref('followed',lazy='joined'),
+                                lazy='dynamic',cascade='all,delete-orphan')
 
 
     def __init__(self, **kwargs):
@@ -170,6 +188,22 @@ class User(UserMixin, db.Model):
     def ping(self):
         self.last_seen = datetime.utcnow()
         db.session.add(self)
+
+    def is_following(self,user):
+        return self.followed.filter_by(followed_id=user.id).first() is not None
+
+    def is_followed_by(self,user):
+        return self.followers.filter_by(follower_id=user.id).first() is not None
+
+    def follow(self,user):
+        if not self.is_following(user):
+            f = Follow(followed=user,follower=self)
+            db.session.add(f)
+
+    def unfollow(self,user):
+        f = self.followed.filter_by(followed_id=user.id).first()
+        if f:
+            db.session.delete(f)
 
     def __repr__(self):
         return '<User %r>' % self.username

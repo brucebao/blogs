@@ -14,7 +14,9 @@ class Config:
     FLASKY_MAIL_SUBJECT_PREFIX = '[苏鲁]'
     FLASKY_MAIL_SENDER = '苏鲁<looker53@sina.com'
     FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
-    FLASKY_POSTS_PER_PAGE = 2
+    FLASKY_POSTS_PER_PAGE = 5
+    FLASKY_FOLLOWERS_PER_PAGE = 5
+    FLASKY_FOLLOWERED_PER_PAGE = 5
 
     @staticmethod
     def init_app(app):
