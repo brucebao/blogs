@@ -106,6 +106,14 @@ class User(UserMixin, db.Model):
                                 lazy='dynamic',cascade='all,delete-orphan')
 
 
+    @staticmethod
+    def add_self_follows():
+        for user in User.query.all():
+            if not user.is_following(user):
+                user.follow(user)
+                db.session.add(user)
+                db.session.commit()
+
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if self.role is None:
@@ -113,6 +121,7 @@ class User(UserMixin, db.Model):
                 self.role = Role.query.filter_by(permissions=0xff).first()
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
+        self.followed.append(Follow(followed=self))
 
     @property
     def password(self):
@@ -204,6 +213,11 @@ class User(UserMixin, db.Model):
         f = self.followed.filter_by(followed_id=user.id).first()
         if f:
             db.session.delete(f)
+
+    @property
+    def followed_posts(self):
+        return Post.query.join(Follow,Follow.followed_id==Post.auth_id)\
+    .filter(Follow.follower_id==self.id)
 
     def __repr__(self):
         return '<User %r>' % self.username

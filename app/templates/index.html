@@ -13,7 +13,15 @@
     {{ wtf.quick_form(form) }}
     {% endif %}
 </div>
-{% include '_posts.html' %}
+<div class="post-tabs">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{{ url_for('.show_all')}}">浏览博客</a></li>
+        {% if current_user.is_authenticated %}
+        <li class="active"><a href="{{ url_for('.show_followed') }}">关注者博客</a></li>
+        {% endif %}
+    </ul>
+    {% include "_posts.html"%}
+</div>
 {% if pagination %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, '.index') }}

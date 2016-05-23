@@ -10,6 +10,7 @@
 <table class="table table-hover followers">
     <thead><tr><th>用户</th><th>时间</th></tr></thead>
     {% for follow in follows %}
+    {% if follow.user != user%}
     <tr>
         <td>
             <a href="{{ url_for('.profile', username = follow.user.username) }}">
@@ -18,6 +19,7 @@
         </td>
         <td>{{ moment(follow.timestamp).format('L') }}</td>
     </tr>
+    {% endif %}
     {% endfor %}
 </table>
 <div class="pagination">
