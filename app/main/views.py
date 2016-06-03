@@ -2,7 +2,7 @@
 from . import main
 from flask import render_template,flash,redirect,url_for,request,current_app,abort,\
     make_response
-from ..models import User,Role,Post,Permission,Comment
+from ..models import User,Role,Post,Permission,Comment,Category
 from .forms import EditProfileForm,EditProfileAdminForm,PostForm,CommentForm
 from flask.ext.login import login_required,current_user
 from .. import db
@@ -37,6 +37,7 @@ def index():
     form = PostForm()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
         post = Post(title=form.title.data,
+                    category=Category.query.get(form.category.data),
                     body=form.body.data,
                     author=current_user._get_current_object())
         db.session.add(post)
@@ -146,11 +147,15 @@ def edit(id):
         abort(403)
     form = PostForm()
     if form.validate_on_submit():
+        post.little = form.title.data
+        post.category = Category.query.get(form.category.data)
         post.body = form.body.data
         db.session.add(post)
         flash('修改成功')
         return redirect('.post',id=post.id)
+    form.title.data = post.title
     form.body.data = post.body
+    form.category.data = post.category_id
     return render_template('edit_post.html',form=form)
 
 

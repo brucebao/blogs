@@ -17,6 +17,24 @@ class Permission:
     MODERATE_COMMENTS = 0x08
     ADMINISTER = 0x80
 
+class Category(db.Model):
+    __tablename__ = 'categories'
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(64),unique=True)
+    posts = db.relationship('Post',backref='category',lazy='dynamic')
+
+    @staticmethod
+    def insert_categories():
+        categories = [u'技术文章',u'读书',u'随笔']
+        for category in categories:
+            postcategory=Category.query.filter_by(name=category).first()
+            if postcategory is None:
+                postcategory = Category(name=category)
+                db.session.add(postcategory)
+        db.session.commit()
+
+        def __repr__(self):
+            return '<Category %r>' % self.name
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -59,6 +77,7 @@ class Post(db.Model):
     body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime,index=True,default=datetime.utcnow)
     auth_id = db.Column(db.Integer,db.ForeignKey('users.id'))
+    category_id = db.Column(db.Integer,db.ForeignKey('categories.id'))
     comments = db.relationship('Comment',backref='post',lazy='dynamic')
 
     @staticmethod
