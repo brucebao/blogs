@@ -6,13 +6,14 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h4>您好, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}Stranger{% endif %}!</h4>
-</div>
-<div>
+    <h4>您好, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}Stranger{% endif %}!
     {% if current_user.can(Permission.WRITE_ARTICLES) %}
-    {{ wtf.quick_form(form) }}
+    <a  href="{{ url_for('main.create_post') }}">
+        <div class="btn btn-primary">写博客</div>
+    </a></h4>
     {% endif %}
 </div>
+
 <div class="post-tabs">
     <ul class="nav nav-tabs">
         <li class="active"><a href="{{ url_for('.show_all')}}">浏览博客</a></li>

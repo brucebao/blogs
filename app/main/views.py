@@ -1,13 +1,17 @@
 # -*- coding:utf-8 -*-
 from . import main
 from flask import render_template,flash,redirect,url_for,request,current_app,abort,\
-    make_response
+    make_response,g
 from ..models import User,Role,Post,Permission,Comment,Category
 from .forms import EditProfileForm,EditProfileAdminForm,PostForm,CommentForm
 from flask.ext.login import login_required,current_user
 from .. import db
 from ..decorators import admin_required,permission_required
 from flask.ext.sqlalchemy import get_debug_queries
+
+@main.before_app_request
+def before_request(): #定义全局变量
+    g.categories=Category.query.all()
 
 @main.after_app_request
 def after_request(response):
@@ -56,6 +60,17 @@ def index():
     return render_template('index.html',posts=posts,form=form,pagination=pagination,
                            show_followed=show_followed)
 
+@main.route('/create_post',methods=['GET','POST'])
+def create_post():
+    form = PostForm()
+    if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
+        post = Post(title=form.title.data,
+                    category=Category.query.get(form.category.data),
+                    body=form.body.data,
+                    author=current_user._get_current_object())
+        db.session.add(post)
+        return redirect(url_for('.index'))
+    return render_template('create_post.html',form=form)
 
 @main.route('/profile/<username>')
 def profile(username):
@@ -113,6 +128,16 @@ def edit_profile_admin(id):
     form.about_me.data = user.about_me
     return render_template('edit_profile.html', form=form, user=user)
 
+@main.route('/category/<int:id>')
+def category(id):
+    category = Category.query.get_or_404(id)
+    page = request.args.get('page',1,type=int)
+    pagination = category.posts.order_by(Post.timestamp.desc()).paginate(
+        page,per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+        error_out=False
+    )
+    posts = pagination.items
+    return render_template('category.html',category=category,posts=posts,pagination=pagination)
 
 @main.route('/post/<int:id>',methods=['GET','POST'])
 def post(id):
@@ -152,7 +177,7 @@ def edit(id):
         post.body = form.body.data
         db.session.add(post)
         flash('修改成功')
-        return redirect('.post',id=post.id)
+        return redirect(url_for('.post',id=post.id))
     form.title.data = post.title
     form.body.data = post.body
     form.category.data = post.category_id

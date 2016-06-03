@@ -25,7 +25,7 @@ class Category(db.Model):
 
     @staticmethod
     def insert_categories():
-        categories = [u'技术文章',u'读书',u'随笔']
+        categories = [u'默认',u'技术文章',u'读书',u'随笔']
         for category in categories:
             postcategory=Category.query.filter_by(name=category).first()
             if postcategory is None:
@@ -85,7 +85,7 @@ class Post(db.Model):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
                          'h1', 'h2', 'h3', 'p']
-        target.html_body = bleach.linkify(bleach.clean(
+        target.body_html = bleach.linkify(bleach.clean(
             markdown(value,output_format='html'),
             tags=allowed_tags,strip=True
         ))
