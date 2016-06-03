@@ -44,6 +44,7 @@ class EditProfileAdminForm(Form):
 
 
 class PostForm(Form):
+    title = StringField('标题')
     body = PageDownField('别让灵感成空，快快写下来：',validators=[Required()])
     submit = SubmitField('提交')
 
