@@ -2,14 +2,14 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html" as macros %}
 
-{% block title %}Flasky{% endblock %}
+{% block title %}多派{% endblock %}
 
 {% block page_content %}
 <div class="page-header">
     <h4>您好, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}Stranger{% endif %}!
     {% if current_user.can(Permission.WRITE_ARTICLES) %}
     <a  href="{{ url_for('main.create_post') }}">
-        <div class="btn btn-primary">写博客</div>
+        <div class="btn btn-primary">写文章</div>
     </a></h4>
     {% endif %}
 </div>
