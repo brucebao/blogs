@@ -29,7 +29,8 @@ ul.posts li.post:hover {
 div.post-date {
     float: right;
 }
-div.post-author {
+div.post-auth {
+    float: right;
     font-weight: bold;
 }
 div.post-thumbnail {
@@ -83,4 +84,12 @@ div.pagination {
 }
 .table.followers tr {
     border-bottom: 1px solid #e0e0e0;
+}
+
+footer.blog-footer {
+    padding: 40px;
+    color: #999;
+    text-align: center;
+    background-color: #f0f0f0;
+    border-top: 1px solid #e5e5e5;
 }

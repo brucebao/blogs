@@ -5,7 +5,7 @@
 
 {% block page_content %}
 <h4>{{ category.name }}</h4>
-{% include '_posts.html' %}
+{% include '_posts_thumbnail.html' %}
 {% if pagination %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, '.category',id=category.id) }}

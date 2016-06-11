@@ -6,7 +6,8 @@
 {% block title %}多派 - 文章{% endblock %}
 
 {% block page_content %}
-{% include '_posts.html' %}
+{% include "_posts.html" %}
+
 <h4 id="comments">评论列表</h4>
 {% if current_user.can(Permission.COMMENT)%}
 <div class="comment-form">

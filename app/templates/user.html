@@ -46,7 +46,7 @@
     </p>
 </div>
 <h4>更新列表</h4>
-{% include '_posts.html' %}
+{% include '_posts_thumbnail.html' %}
 {% if pagination %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination,'.profile',username=user.username)}}
