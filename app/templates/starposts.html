@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}多多派- {{ user.username }} {{ title }} {% endblock %}
+
+{% block page_content %}
+{% include '_userbase.html' %}
+
+
+<div class="row">
+ <div class="col-xs-12">
+<!--   <div class="box"> -->
+<!--     <div class="box-header">
+      <div class="box-tools">
+        <div class="input-group" style="width: 150px;">
+          <input type="text" name="table_search" class="form-control input-sm pull-right" placeholder="Search">
+          <div class="input-group-btn">
+            <button class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
+          </div>
+        </div>
+      </div>
+    </div> --><!-- /.box-header -->
+    <div class="box-body table-responsive no-padding">
+      <table class="table table-hover">
+        <tr>
+          <th>作者</th>
+          <th>标题</th>
+          <th>收藏时间</th>
+          <th>操作</th>
+
+        </tr>
+        {% for post in posts %}
+        <tr>
+          <td><a href="{{ url_for('.profile', username=post.author.username) }}">{{ post.author.username }}</a></td>
+          <td><a href="{{ url_for('.post', id=post.id) }}">{{ post.title }}</a></td>
+          <td>{{ moment(user.star_timestamp(post)).format('L') }}</td>
+          <td>
+          {% if current_user == user %}
+          <a href="{{ url_for('.unstar', id=post.id,) }}" class="label label-danger">
+              取消收藏
+              </a>
+          {% else %}
+          <a href="#" class="label label-default">
+              无权限
+              </a>
+          {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div><!-- /.box-body -->
+<!--   </div> --><!-- /.box -->
+</div>
+</div>
+{% endblock %}
