@@ -114,6 +114,14 @@ class Post(db.Model):
 db.event.listen(Post.body,'set',Post.on_changed_body)
 
 
+class Star(db.Model):
+    __tablename__ = "stars"
+    id = db.Column(db.Integer,primary_key=True)
+    user_id = db.Column(db.Integer,db.ForeignKey('users.id'))
+    post_id = db.Column(db.Integer,db.ForeignKey('posts.id'))
+    timestamp = db.Column(db.DateTime,default=datetime.now)
+
+
 class Follow(db.Model):
     __tablename__ = "follows"
     follower_id = db.Column(db.Integer,
@@ -148,6 +156,7 @@ class User(UserMixin, db.Model):
                                 backref=db.backref('followed',lazy='joined'),
                                 lazy='dynamic',cascade='all,delete-orphan')
     comments = db.relationship('Comment',backref='author',lazy='dynamic')
+    starposts = db.relationship('Post',secondary='stars',backref=db.backref('stared',lazy='joined'),lazy='joined')
 
 
     @staticmethod
@@ -252,6 +261,29 @@ class User(UserMixin, db.Model):
         if not self.is_following(user):
             f = Follow(followed=user,follower=self)
             db.session.add(f)
+
+    def star(self,post):
+        if not self.staring(post):
+            star_one = Star(user_id=self.id,post_id=post.id)
+            db.session.add(star_one)
+            db.session.commit()
+
+    def unstar(self,post):
+        if self.staring(post):
+            star_one = Star.query.filter_by(user_id=self.id,post_id=post.id).first()
+            db.session.delete(star_one)
+            db.session.commit()
+
+    def staring(self,post):
+        if Star.query.filter_by(user_id=self.id,post_id=post.id).first():
+            return True
+        else:
+            return False
+
+    def star_timestamp(self,post):
+        star_one = Star.query.filter_by(user_id=self.id,post_id=post.id).first()
+        return star_one.timestamp
+
 
     def unfollow(self,user):
         f = self.followed.filter_by(followed_id=user.id).first()

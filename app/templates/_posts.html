@@ -18,9 +18,14 @@
             </div>
             <div class="post-footer">
                 {% if current_user == post.author %}
+
                 <a href="{{ url_for('.edit', id=post.id) }}">
-                    <span class="label label-primary">修改</span>
+                    <span class="label label-primary">修改</span></a>
+                <a href="{{ url_for('.delete_post', id=post.id) }}">
+                        <span class="label label-danger">删除</span>
                 </a>
+
+
                 {% elif current_user.is_administrator() %}
                 <a href="{{ url_for('.edit', id=post.id) }}">
                     <span class="label label-danger">修改 [管理员]</span>
@@ -33,6 +38,15 @@
                 <a href="{{ url_for('.post',id=post.id) }}#comments">
                     <span class="label label-primary">{{ post.comments.count() }}评论</span>
                 </a>
+                {% if not current_user.staring(post) %}
+                <a href="{{ url_for('.star',id=post.id) }}">
+                    <span class="label label-primary"><span class="glyphicon glyphicon-star"></span>收藏</span>
+                </a>
+                {% else %}
+                <a href="{{ url_for('.unstar',id=post.id) }}">
+                    <span class="label label-primary"><span class="glyphicon glyphicon-star-empty"></span>取消收藏</span>
+                </a>
+                {% endif %}
             </div>
         </div>
     </li>

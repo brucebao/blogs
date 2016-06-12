@@ -183,6 +183,51 @@ def edit(id):
     form.category.data = post.category_id
     return render_template('edit_post.html',form=form)
 
+@main.route('/edit_post/<int:id>')
+@login_required
+def delete_post(id):
+    post = Post.query.get_or_404(id)
+    if current_user == post.author:
+        db.session.delete(post)
+        flash('删除成功')
+        db.session.commit()
+    return redirect(url_for('.index'))
+
+@main.route('/star/<int:id>')
+@login_required
+def star(id):
+    post = Post.query.get_or_404(id)
+    if current_user.staring(post):
+        flash('你已经收藏了这篇文章，不能重复收藏')
+        return redirect(url_for('.post',id=post.id))
+    current_user.star(post)
+    flash('收藏成功')
+    return redirect(url_for('.post',id=post.id))
+
+@main.route('/unstar/<int:id>')
+@login_required
+def unstar(id):
+    post = Post.query.get_or_404(id)
+    if not current_user.staring(post):
+        flash('你没有收藏这边文章，不能取消收藏')
+        return redirect(url_for('.post',id=post.id))
+    current_user.unstar(post)
+    flash('取消收藏成功')
+    return redirect(url_for('.post',id=post.id))
+
+@main.route('/profile/<username>/starposts')
+@login_required
+def starposts(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('用户不存在')
+        return redirect(url_for('.index'))
+    starpost = user.starposts
+    return render_template('starposts.html', user=user, title="收藏的文章",
+                           posts=starpost)
+
+
+
 
 @main.route('/follow/<username>')
 @login_required

@@ -62,7 +62,7 @@ def deploy():
     from app.models import  Role,User
 
     #migrate database to  the latest version
-    upgrade()
+    #upgrade()
 
     #create roles
     Role.insert_roles()

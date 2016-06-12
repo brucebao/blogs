@@ -18,7 +18,7 @@
     <ul class="nav nav-tabs tabs-primary">
         <li class="active"><a href="{{ url_for('.show_all')}}">浏览博客</a></li>
         {% if current_user.is_authenticated %}
-        <li class="active"><a href="{{ url_for('.show_followed') }}">关注者博客</a></li>
+        <li><a href="{{ url_for('.show_followed') }}">关注者博客</a></li>
         {% endif %}
     </ul>
     {% include "_posts_thumbnail.html"%}
