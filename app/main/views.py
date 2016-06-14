@@ -2,8 +2,8 @@
 from . import main
 from flask import render_template,flash,redirect,url_for,request,current_app,abort,\
     make_response,g
-from ..models import User,Role,Post,Permission,Comment,Category
-from .forms import EditProfileForm,EditProfileAdminForm,PostForm,CommentForm
+from ..models import User,Role,Post,Permission,Comment,Category,Message
+from .forms import EditProfileForm,EditProfileAdminForm,PostForm,CommentForm,SendMessageForm
 from flask.ext.login import login_required,current_user
 from .. import db
 from ..decorators import admin_required,permission_required
@@ -226,7 +226,30 @@ def starposts(username):
     return render_template('starposts.html', user=user, title="收藏的文章",
                            posts=starpost)
 
+@main.route('/send_message/<username>',methods=['GET','POST'])
+@login_required
+def send_message(username):
+    user = User.query.filter_by(username=username).first()
+    form = SendMessageForm()
+    if form.validate_on_submit():
+        message = Message(body=form.body.data,
+                          author = current_user,
+                          sendto = user)
+        db.session.add(message)
+        db.session.commit()
+        return redirect(url_for('.profile',username=username))
+    return render_template('sendmessage.html',form=form)
 
+@main.route('/profile/<username>/showmessages')
+@login_required
+def showmessages(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('用户不存在')
+        return redirect(url_for('.index'))
+    messages = Message.query.filter_by(sendto=current_user).all()
+    return render_template('showmessage.html', user=user, title="收到的私信",
+                           messages=messages)
 
 
 @main.route('/follow/<username>')

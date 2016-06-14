@@ -31,6 +31,7 @@
         {% endif %}
     </p>
     <p>
+        <a class="btn btn-primary" href="{{ url_for('.send_message',username=user.username) }}">发私信</a>
         {% if user == current_user %}
         <a class="btn btn-default" href="{{ url_for('main.edit_profile') }}">修改资料</a>
         {% endif %}
@@ -41,9 +42,11 @@
 </div>
 <div class="post-tabs">
     <ul class="nav nav-tabs tabs-primary">
-        <li class="active"><a href="{{ url_for('.profile',username=user.username)}}">原创文章</a></li>
         {% if current_user.is_authenticated %}
+        <li class="active"><a href="{{ url_for('.profile',username=user.username)}}">原创文章</a></li>
+
         <li class=""><a href="{{ url_for('.starposts',username=user.username) }}">收藏文章</a></li>
+        <li class=""><a href="{{ url_for('.showmessages',username=user.username) }}">收到的私信</a></li>
         {% endif %}
     </ul>
 </div>

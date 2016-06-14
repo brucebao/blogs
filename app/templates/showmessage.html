@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}多多派- {{title}} {% endblock %}
+
+{% block page_content %}
+{% include '_userbase.html' %}
+
+
+<div class="row">
+ <div class="col-xs-12">
+<!--   <div class="box"> -->
+<!--     <div class="box-header">
+      <div class="box-tools">
+        <div class="input-group" style="width: 150px;">
+          <input type="text" name="table_search" class="form-control input-sm pull-right" placeholder="Search">
+          <div class="input-group-btn">
+            <button class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
+          </div>
+        </div>
+      </div>
+    </div> --><!-- /.box-header -->
+    <div class="box-body table-responsive no-padding">
+      <table class="table table-hover">
+        <tr>
+          <th>来自</th>
+
+
+
+          <th>内容</th>
+
+        </tr>
+        {% for message in messages %}
+        <tr>
+          <td><a href="{{ url_for('.profile', username=message.author.username) }}">{{ message.author.username }}</a></td>
+
+
+          <td>{{ message.body }}</a></td>
+
+        </tr>
+        {% endfor %}
+      </table>
+    </div><!-- /.box-body -->
+<!--   </div> --><!-- /.box -->
+</div>
+</div>
+{% endblock %}

@@ -114,12 +114,22 @@ class Post(db.Model):
 db.event.listen(Post.body,'set',Post.on_changed_body)
 
 
+class Message(db.Model):
+    __tablename__ = "messages"
+    id = db.Column(db.Integer,primary_key=True)
+    body = db.Column(db.Text)
+    sendto_id = db.Column(db.Integer,db.ForeignKey('users.id'))
+    author_id = db.Column(db.Integer,db.ForeignKey('users.id'))
+    confirmed = db.Column(db.Boolean,default=False)
+    timestamp = db.Column(db.DateTime,default=datetime.utcnow)
+
+
 class Star(db.Model):
     __tablename__ = "stars"
     id = db.Column(db.Integer,primary_key=True)
     user_id = db.Column(db.Integer,db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer,db.ForeignKey('posts.id'))
-    timestamp = db.Column(db.DateTime,default=datetime.now)
+    timestamp = db.Column(db.DateTime,default=datetime.utcnow)
 
 
 class Follow(db.Model):
@@ -155,6 +165,16 @@ class User(UserMixin, db.Model):
                                 foreign_keys=[Follow.followed_id],
                                 backref=db.backref('followed',lazy='joined'),
                                 lazy='dynamic',cascade='all,delete-orphan')
+    sendto = db.relationship('Message',
+                             foreign_keys=[Message.sendto_id],
+                             backref=db.backref('sendto',lazy='joined'),
+                             lazy='dynamic',cascade='all,delete-orphan'
+                             )
+    author = db.relationship('Message',
+                             foreign_keys=[Message.author_id],
+                             backref=db.backref('author',lazy='joined'),
+                             lazy='dynamic',cascade='all,delete-orphan'
+                             )
     comments = db.relationship('Comment',backref='author',lazy='dynamic')
     starposts = db.relationship('Post',secondary='stars',backref=db.backref('stared',lazy='joined'),lazy='joined')
 

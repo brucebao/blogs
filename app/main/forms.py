@@ -58,3 +58,8 @@ class PostForm(Form):
 class CommentForm(Form):
     body = StringField('评论内容：',validators=[Required()])
     submit = SubmitField('提交')
+
+
+class SendMessageForm(Form):
+    body = StringField('私信内容', validators=[Required()])
+    submit = SubmitField('发送')
