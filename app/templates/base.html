@@ -46,7 +46,11 @@
             {% if current_user.can(Permission.MODERATE_COMMENTS) %}
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="{{ url_for('main.showmessages',username=current_user.username) }}">
-                    <i class="glyphicon glyphicon-envelope" aria-hidden="true"></i></a></li>
+                    <i class="glyphicon glyphicon-envelope" aria-hidden="true"></i>
+                    {% if current_user.unread_message() >= 1 %}
+                        <span class="btn btn-xs btn-primary">{{ current_user.unread_message()}} </span>
+                    {% endif %}
+                </a></li>
 
                 <li><a href="{{ url_for('main.moderate') }}">管理</a></li>
             </ul>
