@@ -79,6 +79,10 @@ class Post(db.Model):
     auth_id = db.Column(db.Integer,db.ForeignKey('users.id'))
     category_id = db.Column(db.Integer,db.ForeignKey('categories.id'))
     comments = db.relationship('Comment',backref='post',lazy='dynamic')
+    visits = db.Column(db.Integer,nullable=False,default=int(10))
+
+
+
 
     @staticmethod
     def on_changed_body(target,value,oldvalue,initiator):
@@ -299,6 +303,15 @@ class User(UserMixin, db.Model):
             return True
         else:
             return False
+
+    def unread_message(self):
+        num = self.sendto.count()
+        total = 0
+        for i in range(0,num):
+            if self.sendto[i].confirmed == False:
+                total += 1
+        return total
+
 
     def star_timestamp(self,post):
         star_one = Star.query.filter_by(user_id=self.id,post_id=post.id).first()

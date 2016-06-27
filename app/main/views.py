@@ -12,6 +12,7 @@ from flask.ext.sqlalchemy import get_debug_queries
 @main.before_app_request
 def before_request(): #定义全局变量
     g.categories=Category.query.all()
+    g.hotpost = Post.query.order_by(Post.visits.desc()).all()
 
 @main.after_app_request
 def after_request(response):
@@ -39,13 +40,14 @@ def server_shutdown():
 @main.route('/',methods=['GET','POST'])
 def index():
     form = PostForm()
-    if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
-        post = Post(title=form.title.data,
-                    category=Category.query.get(form.category.data),
-                    body=form.body.data,
-                    author=current_user._get_current_object())
-        db.session.add(post)
-        return redirect(url_for('.index'))
+
+    # if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
+    #     post = Post(title=form.title.data,
+    #                 category=Category.query.get(form.category.data),
+    #                 body=form.body.data,
+    #                 author=current_user._get_current_object())
+    #     db.session.add(post)
+    #     return redirect(url_for('.index'))
     page = request.args.get('page',1,type=int)
     show_followed = False
     if current_user.is_authenticated:
@@ -142,7 +144,11 @@ def category(id):
 @main.route('/post/<int:id>',methods=['GET','POST'])
 def post(id):
     post = Post.query.get_or_404(id)
+    post.visits += int(1)
+    print 'visit plus 1'
+
     form = CommentForm()
+
     if form.validate_on_submit():
         comment = Comment(body=form.body.data,
                           post = post,
@@ -183,7 +189,7 @@ def edit(id):
     form.category.data = post.category_id
     return render_template('edit_post.html',form=form)
 
-@main.route('/edit_post/<int:id>')
+@main.route('/delete_post/<int:id>')
 @login_required
 def delete_post(id):
     post = Post.query.get_or_404(id)
@@ -247,9 +253,42 @@ def showmessages(username):
     if user is None:
         flash('用户不存在')
         return redirect(url_for('.index'))
-    messages = Message.query.filter_by(sendto=current_user).all()
+    page = request.args.get('page',1,type=int)
+
+    pagination = Message.query.order_by(Message.timestamp.desc()).filter_by(sendto=current_user).paginate(
+        page,error_out=False
+    )
+    messages = pagination.items
     return render_template('showmessage.html', user=user, title="收到的私信",
-                           messages=messages)
+                           messages=messages,page=page,pagination=pagination)
+
+@main.route('/showmessages/<username>/unconfirmed/<int:id>')
+@login_required
+def showmessage_unconfirmed(id,username):
+    user = User.query.filter_by(username=username).first()
+    message = Message.query.get_or_404(id)
+    message.confirmed = True
+    db.session.add(message)
+    return redirect(url_for('.showmessages',username=username))
+
+@main.route('/showmessages/<username>confirmed/<int:id>')
+@login_required
+def showmessage_confirmed(id,username):
+    user = User.query.filter_by(username=username).first()
+    message = Message.query.get_or_404(id)
+    message.confirmed = False
+    db.session.add(message)
+    return redirect(url_for('.showmessages',username=username))
+
+@main.route('/message/<username>/delete/<int:id>')
+@login_required
+def message_delete( id ,username):
+    user = User.query.filter_by(username=username).first()
+    message = Message.query.get_or_404( id )
+    db.session.delete(message)
+    flash('私信删除成功')
+    db.session.commit()
+    return redirect(url_for('.showmessages',username=username))
 
 
 @main.route('/follow/<username>')

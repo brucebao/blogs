@@ -11,9 +11,9 @@
             </div>
             <div class="post-body">
                 {% if post.body_html %}
-                    {{ post.body_html[:300]| safe }}
+                    {{ post.body_html[:500]| safe }}
                 {% else %}
-                    {{ post.body[:300] }}
+                    {{ post.body[:500] }}
                 {% endif %}
             </div>
             <div class="post-footer">

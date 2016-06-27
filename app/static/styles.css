@@ -1,3 +1,20 @@
+div.col-xs-4 li.treeview {
+    margin-top: 50px;
+    margin-left: 50px
+}
+
+div.col-xs-4 li.treeview  ul.treeview-menu {
+    padding: 10px;
+    background-color: #f0f0f0;
+}
+
+div.col-xs-4 li.treeview  ul.treeview-menu li{
+    padding: 7px;
+}
+
+div.col-xs-4 li.treeview span.badge {
+    float:right
+}
 .profile-thumbnail {
     position: absolute;
 }
@@ -16,7 +33,7 @@ div.btn  {
 ul.posts {
     list-style-type: none;
     padding: 0px;
-    margin: 16px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
     border-top: 1px solid #e0e0e0;
 }
 ul.posts li.post {
@@ -37,8 +54,8 @@ div.post-thumbnail {
     position: absolute;
 }
 div.post-content {
-    margin-left: 48px;
-    min-height: 48px;
+    margin-left: 20px;
+    min-height: 20px;
 }
 div.post-footer {
     text-align:right;
@@ -87,9 +104,12 @@ div.pagination {
 }
 
 footer.blog-footer {
-    padding: 40px;
+
+    padding: 50px;
     color: #999;
     text-align: center;
     background-color: #f0f0f0;
     border-top: 1px solid #e5e5e5;
+
+
 }

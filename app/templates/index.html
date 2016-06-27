@@ -5,27 +5,66 @@
 {% block title %}多派{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <h4>您好, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}Stranger{% endif %}!
-    {% if current_user.can(Permission.WRITE_ARTICLES) %}
-    <a  href="{{ url_for('main.create_post') }}">
-        <div class="btn btn-primary">写文章</div>
-    </a></h4>
-    {% endif %}
-</div>
+<div class="row">
+    <div class="col-xs-8">
+        <!--<div class="page-header">-->
+            <!--<h4>您好, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}Stranger{% endif %}!-->
+            <!--{% if current_user.can(Permission.WRITE_ARTICLES) %}-->
+            <!--<a  href="{{ url_for('main.create_post') }}">-->
+                <!--<div class="btn btn-primary">写文章</div>-->
+            <!--</a></h4>-->
+            <!--{% endif %}-->
+        <!--</div>-->
 
-<div class="post-tabs">
-    <ul class="nav nav-tabs tabs-primary">
-        <li><a href="{{ url_for('.show_all')}}">浏览博客</a></li>
-        {% if current_user.is_authenticated %}
-        <li><a href="{{ url_for('.show_followed') }}">关注者博客</a></li>
-        {% endif %}
-    </ul>
-    {% include "_posts_thumbnail.html"%}
-</div>
-{% if pagination %}
-<div class="pagination">
-    {{ macros.pagination_widget(pagination, '.index') }}
+        <div class="post-tabs">
+            <ul class="nav nav-pills">
+                <li><a href="{{ url_for('.show_all')}}">浏览博客</a></li>
+                {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('.show_followed') }}">关注者博客</a></li>
+                {% endif %}
+            </ul>
+            {% include "_posts_thumbnail.html"%}
+        </div>
+        {% if pagination %}
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination, '.index') }}
+        </div>
+    </div>
+    <div class="col-xs-4">
+        <div class="write-button" style="padding:20px">
+            <!--<h4>您好, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}Stranger{% endif %}!-->
+            {% if current_user.can(Permission.WRITE_ARTICLES) %}
+            <a  href="{{ url_for('main.create_post') }}">
+                <div class="btn btn-sm btn-default">写文章</div>
+            </a></h4>
+            {% endif %}
+        </div>
+        <li class="treeview list-unstyled">
+            <h2>热门文章</h2>
+            <ul class="treeview-menu list-unstyled">
+                {% for post in g.hotpost %}
+                <li><a href="{{ url_for('main.post', id=post.id) }}">{{ post.title }}<span class="badge">{{ post.visits}}</span></a></li>
+                {% endfor %}
+            </ul>
+        </li>
+        <li class="treeview list-unstyled">
+            <h2>最近文章</h2>
+            <ul class="treeview-menu list-unstyled">
+                {% for post in posts %}
+                <li><a href="{{ url_for('main.post', id=post.id) }}">{{ post.title }}<span class="badge">{{ post.visits}}</span></a></li>
+                {% endfor %}
+            </ul>
+        </li>
+        <li class="treeview list-unstyled">
+            <h2>文章分类</h2>
+            <ul class="treeview-menu list-unstyled">
+                {% for category in g.categories %}
+                <li><a href="{{ url_for('main.category',id=category.id)}}">{{category.name}}<span class="badge">{{category.posts.count()}}</span></a></li>
+                {% endfor %}
+            </ul>
+        </li>
+
+    </div>
 </div>
 {% endif %}
 {% endblock %}
