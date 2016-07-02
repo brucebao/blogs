@@ -1,21 +1,21 @@
 body,button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 { font-family: Microsoft YaHei , Tahoma, Helvetica, Arial, "\5b8b\4f53";}
 }
 
-div.col-xs-4 li.treeview {
+div.treeview {
     margin-top: 50px;
     margin-left: 50px
 }
 
-div.col-xs-4 li.treeview  ul.treeview-menu {
+div.treeview  ul.treeview-menu {
     padding: 10px;
     background-color: #f0f0f0;
 }
 
-div.col-xs-4 li.treeview  ul.treeview-menu li{
+div.treeview  ul.treeview-menu li{
     padding: 7px;
 }
 
-div.col-xs-4 li.treeview span.badge {
+div.treeview span.badge {
     float:right
 }
 .profile-thumbnail {
