@@ -6,6 +6,8 @@
 $ pip install -r requirement.txt
 $ python manage.py deploy
 $ python manage.py runserver
+
+浏览器打开：127.0.0.1:5000访问
 ```
 
 ### Detail
